@@ -44,7 +44,7 @@ if modo == "full":
             .filter(F.col("HG").isNotNull())
             .select(
                 F.col("temporada").cast("int").alias("temporada"),
-                F.to_timestamp(F.concat_ws(" ", "Date", F.coalesce("Time", F.lit("00:00"))), "dd/MM/yyyy HH:mm").alias("data_hora"),
+                F.to_timestamp(F.concat_ws(" ", F.trim("Date"), F.coalesce(F.trim("Time"), F.lit("00:00"))), "dd/MM/yyyy HH:mm").alias("data_hora"),
                 F.trim("Home").alias("mandante"), F.trim("Away").alias("visitante"),
                 F.col("HG").cast("int").alias("gols_mandante"), F.col("AG").cast("int").alias("gols_visitante"),
                 F.col("AvgCH").cast("double").alias("odd_mandante"), F.col("AvgCD").cast("double").alias("odd_empate"),

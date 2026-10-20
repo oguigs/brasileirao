@@ -1,0 +1,26 @@
+resources:
+  jobs:
+    brasileirao_01_setup:
+      name: brasileirao_01_setup
+      git_source:
+        git_url: https://github.com/oguigs/brasileirao/
+        git_provider: gitHub
+        git_branch: main
+      description: Cria schemas, volume e copia os arquivos de dados para o volume.
+        Rode uma vez antes de tudo.
+      tasks:
+        - task_key: setup
+          notebook_task:
+            notebook_path: /Workspace/Users/guilherme.carmo.gomes@gmail.com/brasileirao/src/notebooks/00_setup
+            source: WORKSPACE
+      tags:
+        aula: lakeflow-jobs
+      queue:
+        enabled: true
+      parameters:
+        - name: catalogo
+          default: workspace
+        - name: prefixo
+          default: brasileirao
+        - name: copiar_exemplos
+          default: "false"
