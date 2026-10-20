@@ -1,0 +1,32 @@
+resources:
+  jobs:
+    brasileirao_05_orquestrador:
+      name: brasileirao_05_orquestrador
+      description: Escolhe entre reprocessar tudo ou só a rodada, chamando os outros jobs.
+      tasks:
+        - task_key: modo_completo
+          condition_task:
+            op: EQUAL_TO
+            left: "{{job.parameters.modo}}"
+            right: completo
+        - task_key: rodar_historico
+          depends_on:
+            - task_key: modo_completo
+              outcome: "true"
+          run_job_task:
+            job_id: 1076534616368595
+        - task_key: rodar_incremental
+          depends_on:
+            - task_key: modo_completo
+              outcome: "false"
+          run_job_task:
+            job_id: 1022116561630782
+            job_parameters:
+              n_simulacoes: "100000"
+      tags:
+        aula: lakeflow-jobs
+      queue:
+        enabled: true
+      parameters:
+        - name: modo
+          default: rodada
