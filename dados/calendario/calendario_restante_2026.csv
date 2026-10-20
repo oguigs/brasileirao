@@ -1,0 +1,90 @@
+temporada,rodada,data_hora_utc,mandante,visitante
+2026,21,2026-07-29T00:00:00Z,Chapecoense,Vasco
+2026,30,2026-10-11T19:00:00Z,Atlético-MG,Santos
+2026,30,2026-10-11T20:30:00Z,Flamengo,Fluminense
+2026,30,2026-10-11T20:30:00Z,Grêmio,Internacional
+2026,30,2026-10-11T20:30:00Z,Palmeiras,Corinthians
+2026,30,2026-10-11T22:30:00Z,Bahia,Mirassol
+2026,30,2026-10-12T19:00:00Z,Coritiba,Botafogo
+2026,30,2026-10-12T22:30:00Z,Chapecoense,Athletico-PR
+2026,30,2026-10-13T00:00:00Z,Bragantino,Cruzeiro
+2026,31,2026-10-16T23:00:00Z,Mirassol,Internacional
+2026,31,2026-10-17T21:00:00Z,Botafogo,Chapecoense
+2026,31,2026-10-17T21:30:00Z,Atlético-MG,Coritiba
+2026,31,2026-10-17T22:30:00Z,Athletico-PR,Palmeiras
+2026,31,2026-10-18T00:00:00Z,São Paulo,Vasco
+2026,31,2026-10-18T19:00:00Z,Fluminense,Santos
+2026,31,2026-10-18T19:00:00Z,Grêmio,Cruzeiro
+2026,31,2026-10-18T21:30:00Z,Bahia,Flamengo
+2026,31,2026-10-18T22:30:00Z,Remo,Bragantino
+2026,31,2026-10-19T23:00:00Z,Corinthians,Vitória
+2026,32,2026-10-23T23:00:00Z,Cruzeiro,Remo
+2026,32,2026-10-24T19:30:00Z,Internacional,Botafogo
+2026,32,2026-10-24T19:30:00Z,Mirassol,São Paulo
+2026,32,2026-10-24T19:30:00Z,Vitória,Athletico-PR
+2026,32,2026-10-24T21:30:00Z,Palmeiras,Bragantino
+2026,32,2026-10-24T21:30:00Z,Vasco,Corinthians
+2026,32,2026-10-24T22:30:00Z,Chapecoense,Fluminense
+2026,32,2026-10-25T01:00:00Z,Santos,Bahia
+2026,32,2026-10-26T22:30:00Z,Coritiba,Grêmio
+2026,32,2026-10-26T23:00:00Z,Flamengo,Atlético-MG
+2026,33,2026-10-28T22:30:00Z,Bragantino,Chapecoense
+2026,33,2026-10-28T22:30:00Z,Fluminense,Internacional
+2026,33,2026-10-28T22:30:00Z,Santos,Palmeiras
+2026,33,2026-10-29T00:30:00Z,Bahia,São Paulo
+2026,33,2026-10-29T00:30:00Z,Remo,Botafogo
+2026,33,2026-10-29T22:30:00Z,Atlético-MG,Cruzeiro
+2026,33,2026-10-29T22:30:00Z,Coritiba,Vitória
+2026,33,2026-10-29T23:00:00Z,Vasco,Flamengo
+2026,33,2026-10-30T00:30:00Z,Grêmio,Athletico-PR
+2026,33,2026-10-30T23:00:00Z,Corinthians,Mirassol
+2026,34,2026-11-02T23:00:00Z,Bragantino,Santos
+2026,34,2026-11-03T22:30:00Z,Chapecoense,Mirassol
+2026,34,2026-11-04T00:30:00Z,Internacional,Coritiba
+2026,34,2026-11-04T22:30:00Z,Athletico-PR,Vasco
+2026,34,2026-11-04T22:30:00Z,Flamengo,Grêmio
+2026,34,2026-11-05T00:30:00Z,Botafogo,Atlético-MG
+2026,34,2026-11-05T00:30:00Z,São Paulo,Corinthians
+2026,34,2026-11-05T22:30:00Z,Palmeiras,Remo
+2026,34,2026-11-06T00:30:00Z,Cruzeiro,Bahia
+2026,34,2026-11-06T23:00:00Z,Vitória,Fluminense
+2026,35,2026-11-18T00:00:00Z,Corinthians,Botafogo
+2026,35,2026-11-18T00:00:00Z,Coritiba,Santos
+2026,35,2026-11-18T00:00:00Z,Cruzeiro,Palmeiras
+2026,35,2026-11-18T00:00:00Z,Flamengo,Athletico-PR
+2026,35,2026-11-18T00:00:00Z,Grêmio,Bahia
+2026,35,2026-11-18T00:00:00Z,Mirassol,Atlético-MG
+2026,35,2026-11-18T00:00:00Z,Remo,Chapecoense
+2026,35,2026-11-18T00:00:00Z,São Paulo,Fluminense
+2026,35,2026-11-18T00:00:00Z,Vasco,Internacional
+2026,35,2026-11-18T00:00:00Z,Vitória,Bragantino
+2026,36,2026-11-21T00:00:00Z,Athletico-PR,Remo
+2026,36,2026-11-21T00:00:00Z,Atlético-MG,Corinthians
+2026,36,2026-11-21T00:00:00Z,Bahia,Coritiba
+2026,36,2026-11-21T00:00:00Z,Botafogo,São Paulo
+2026,36,2026-11-21T00:00:00Z,Bragantino,Vasco
+2026,36,2026-11-21T00:00:00Z,Chapecoense,Cruzeiro
+2026,36,2026-11-21T00:00:00Z,Fluminense,Mirassol
+2026,36,2026-11-21T00:00:00Z,Internacional,Vitória
+2026,36,2026-11-21T00:00:00Z,Palmeiras,Flamengo
+2026,36,2026-11-21T00:00:00Z,Santos,Grêmio
+2026,37,2026-11-28T00:00:00Z,Atlético-MG,Vasco
+2026,37,2026-11-28T00:00:00Z,Botafogo,Bahia
+2026,37,2026-11-28T00:00:00Z,Chapecoense,Palmeiras
+2026,37,2026-11-28T00:00:00Z,Corinthians,Grêmio
+2026,37,2026-11-28T00:00:00Z,Coritiba,Flamengo
+2026,37,2026-11-28T00:00:00Z,Fluminense,Cruzeiro
+2026,37,2026-11-28T00:00:00Z,Internacional,Bragantino
+2026,37,2026-11-28T00:00:00Z,Mirassol,Athletico-PR
+2026,37,2026-11-28T00:00:00Z,São Paulo,Remo
+2026,37,2026-11-28T00:00:00Z,Vitória,Santos
+2026,38,2026-12-02T00:00:00Z,Athletico-PR,São Paulo
+2026,38,2026-12-02T00:00:00Z,Bahia,Atlético-MG
+2026,38,2026-12-02T00:00:00Z,Bragantino,Fluminense
+2026,38,2026-12-02T00:00:00Z,Cruzeiro,Internacional
+2026,38,2026-12-02T00:00:00Z,Flamengo,Chapecoense
+2026,38,2026-12-02T00:00:00Z,Grêmio,Mirassol
+2026,38,2026-12-02T00:00:00Z,Palmeiras,Coritiba
+2026,38,2026-12-02T00:00:00Z,Remo,Corinthians
+2026,38,2026-12-02T00:00:00Z,Santos,Botafogo
+2026,38,2026-12-02T00:00:00Z,Vasco,Vitória
