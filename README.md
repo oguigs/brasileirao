@@ -17,7 +17,7 @@ construída ao vivo na aula de orquestração. Roda no Databricks Free Edition
 Tabela final: `workspace.brasileirao_gold.tabela_final`.
 
 ## Como rodar
-
+ 
 1. No Databricks: **Workspace > Create > Git folder** com a URL deste repositório.
 2. Crie os jobs na tela, como na aula, ou a partir dos arquivos de `resources/jobs`.
 3. Rode `brasileirao_01_setup` e depois `brasileirao_02_historico`.
