@@ -1,0 +1,533 @@
+{
+  "datasets": [
+    {
+      "name": "2c55793f",
+      "displayName": "ds_resumo",
+      "queryLines": [
+        "SELECT\n",
+        "  min_by(time, posicao)             AS lider,\n",
+        "  min_by(pontos, posicao)          AS pontos_lider,\n",
+        "  max_by(time, pct_titulo)         AS favorito,\n",
+        "  max(pct_titulo)                  AS pct_favorito,\n",
+        "  min_by(jogos_restantes, posicao) AS jogos_restantes,\n",
+        "  max(simulacoes)                  AS simulacoes,\n",
+        "  max(calculado_em)                AS calculado_em,\n",
+        "  (SELECT time   FROM workspace.brasileirao_gold.tabela_final ORDER BY posicao LIMIT 1 OFFSET 1) AS segundo,\n",
+        "  (SELECT pontos FROM workspace.brasileirao_gold.tabela_final ORDER BY posicao LIMIT 1 OFFSET 1) AS pontos_segundo,\n",
+        "  (SELECT pontos FROM workspace.brasileirao_gold.tabela_final ORDER BY posicao LIMIT 1)\n",
+        "  -\n",
+        "  (SELECT pontos FROM workspace.brasileirao_gold.tabela_final ORDER BY posicao LIMIT 1 OFFSET 1)  AS diferenca_primeiro\n",
+        "FROM workspace.brasileirao_gold.tabela_final"
+      ]
+    },
+    {
+      "name": "7cda43bb",
+      "displayName": "ds_tabela_final",
+      "queryLines": [
+        "SELECT posicao, time, jogos, pontos, saldo, jogos_restantes,\n",
+        "       pontos_esperados, posicao_mais_provavel,\n",
+        "       pct_titulo, pct_top5, pct_rebaixamento,\n",
+        "       melhor_posicao, pior_posicao, calculado_em\n",
+        "FROM workspace.brasileirao_gold.tabela_final\n",
+        "ORDER BY posicao\n"
+      ]
+    },
+    {
+      "name": "5869122b",
+      "displayName": "ds_distribuicao",
+      "queryLines": [
+        "-- chance de cada time terminar em cada posição (1 a 20)\n",
+        "-- time_ordem (\"01º Flamengo\") faz o eixo Y seguir a ordem da tabela\n",
+        "SELECT p.time,\n",
+        "       concat(lpad(cast(t.posicao AS STRING), 2, '0'), 'º ', p.time) AS time_ordem,\n",
+        "       t.posicao AS posicao_atual, t.pontos,\n",
+        "       d.pos + 1 AS posicao, round(100 * d.prob, 2) AS pct\n",
+        "FROM workspace.brasileirao_gold.projecao_final p\n",
+        "JOIN workspace.brasileirao_gold.tabela_final t USING (time)\n",
+        "LATERAL VIEW posexplode(p.dist_posicoes) d AS pos, prob"
+      ]
+    },
+    {
+      "name": "928ae326",
+      "displayName": "ds_faixa_pontos",
+      "queryLines": [
+        "-- pontos esperados com a faixa de incerteza (10% e 90% das simulações)\n",
+        "SELECT p.time, t.posicao, p.pontos_atuais,\n",
+        "       round(p.pontos_esperados, 1) AS pontos_esperados,\n",
+        "       p.pontos_p10, p.pontos_p90\n",
+        "FROM workspace.brasileirao_gold.projecao_final p\n",
+        "JOIN workspace.brasileirao_gold.tabela_final t USING (time)\n",
+        "ORDER BY t.posicao\n"
+      ]
+    },
+    {
+      "name": "b22b0a0f",
+      "displayName": "ds_evolucao",
+      "queryLines": [
+        "-- uma linha por time a cada execução do pipeline\n",
+        "SELECT data_ref AS calculado_em, time,\n",
+        "       round(100 * p_titulo, 1)       AS pct_titulo,\n",
+        "       round(100 * p_z4, 1)           AS pct_rebaixamento,\n",
+        "       round(pontos_esperados, 1)     AS pontos_esperados\n",
+        "FROM workspace.brasileirao_gold.historico_projecoes\n"
+      ]
+    },
+    {
+      "name": "c823ffa0",
+      "displayName": "ds_prob_jogos",
+      "queryLines": [
+        "-- dados processados: o campeonato de 2012 a 2026, temporada a temporada\n",
+        "SELECT temporada,\n",
+        "       count(*) AS jogos,\n",
+        "       round(avg(gols_mandante + gols_visitante), 2) AS media_gols,\n",
+        "       round(100 * avg(CASE WHEN gols_mandante > gols_visitante THEN 1 ELSE 0 END), 1) AS pct_vitoria_mandante,\n",
+        "       round(100 * avg(CASE WHEN gols_mandante = gols_visitante THEN 1 ELSE 0 END), 1) AS pct_empate,\n",
+        "       round(100 * avg(CASE WHEN gols_mandante < gols_visitante THEN 1 ELSE 0 END), 1) AS pct_vitoria_visitante\n",
+        "FROM workspace.brasileirao_silver.partidas\n",
+        "GROUP BY temporada\n",
+        "ORDER BY temporada\n"
+      ]
+    },
+    {
+      "name": "2bdca33a",
+      "displayName": "ds_temporadas",
+      "queryLines": [
+        "-- dados processados: o campeonato de 2012 a 2026, temporada a temporada\n",
+        "SELECT temporada,\n",
+        "       count(*) AS jogos,\n",
+        "       round(avg(gols_mandante + gols_visitante), 2) AS media_gols,\n",
+        "       round(100 * avg(CASE WHEN gols_mandante > gols_visitante THEN 1 ELSE 0 END), 1) AS pct_vitoria_mandante,\n",
+        "       round(100 * avg(CASE WHEN gols_mandante = gols_visitante THEN 1 ELSE 0 END), 1) AS pct_empate,\n",
+        "       round(100 * avg(CASE WHEN gols_mandante < gols_visitante THEN 1 ELSE 0 END), 1) AS pct_vitoria_visitante\n",
+        "FROM workspace.brasileirao_silver.partidas\n",
+        "GROUP BY temporada\n",
+        "ORDER BY temporada\n"
+      ]
+    },
+    {
+      "name": "54c934d7",
+      "displayName": "ds_forcas",
+      "queryLines": [
+        "-- ataque e defesa estimados pelo modelo no último treino (quanto maior, melhor nos dois)\n",
+        "SELECT f.time, t.posicao,\n",
+        "       round(f.ataque, 3) AS ataque,\n",
+        "       round(f.defesa, 3) AS defesa\n",
+        "FROM workspace.brasileirao_gold.modelo_forcas f\n",
+        "JOIN workspace.brasileirao_gold.tabela_final t USING (time)\n",
+        "WHERE f.run_id = (SELECT max_by(run_id, data_ref) FROM workspace.brasileirao_gold.modelo_forcas)\n"
+      ]
+    },
+    {
+      "name": "e1eb44d1",
+      "displayName": "ds_backtest",
+      "queryLines": [
+        "-- erro das previsões no último backtest (RPS: quanto menor, melhor)\n",
+        "WITH ultimo AS (\n",
+        "  SELECT * FROM workspace.brasileirao_gold.backtest_metricas\n",
+        "  ORDER BY calculado_em DESC LIMIT 1\n",
+        ")\n",
+        "SELECT 'Modelo' AS previsao, round(rps_modelo, 4) AS rps FROM ultimo\n",
+        "UNION ALL\n",
+        "SELECT 'Média da liga', round(rps_media_liga, 4) FROM ultimo\n",
+        "UNION ALL\n",
+        "SELECT 'Mercado (odds)', round(rps_mercado, 4) FROM ultimo\n"
+      ]
+    },
+    {
+      "name": "df227d98",
+      "displayName": "ds_execucoes",
+      "queryLines": [
+        "SELECT registrado_em, job_nome, gatilho, status, detalhes\n",
+        "FROM workspace.brasileirao_ops.execucoes\n",
+        "ORDER BY registrado_em DESC\n"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "13fe1b91",
+      "displayName": "Untitled page",
+      "layout": [
+        {
+          "widget": {
+            "name": "392b9ed4",
+            "multilineTextboxSpec": {
+              "lines": [
+                "Lider do campeonato\n",
+                "<p>&nbsp;</p>\n"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "lider",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "2c55793f",
+                  "fields": [
+                    {
+                      "name": "jogos_restantes",
+                      "expression": "`jogos_restantes`"
+                    },
+                    {
+                      "name": "pontos_lider",
+                      "expression": "`pontos_lider`"
+                    },
+                    {
+                      "name": "lider",
+                      "expression": "`lider`"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`lider` IN (`lider`) OR TRUE"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "facet": {
+                "type": "wrap",
+                "fieldName": "lider",
+                "scale": {
+                  "type": "categorical"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "showDescription": false,
+                "title": {
+                  "value": "Lider",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "pontos_lider"
+                },
+                "target": {
+                  "fieldName": "jogos_restantes"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 5,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "bd960417",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "2c55793f",
+                  "fields": [
+                    {
+                      "name": "diferenca_primeiro",
+                      "expression": "`diferenca_primeiro`"
+                    },
+                    {
+                      "name": "pontos_segundo",
+                      "expression": "`pontos_segundo`"
+                    },
+                    {
+                      "name": "segundo",
+                      "expression": "`segundo`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "facet": {
+                "type": "wrap",
+                "fieldName": "segundo",
+                "scale": {
+                  "type": "categorical"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "showDescription": false,
+                "title": "2º Colocado"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "pontos_segundo"
+                },
+                "target": {
+                  "fieldName": "diferenca_primeiro"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 5,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "1404f186",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "5869122b",
+                  "fields": [
+                    {
+                      "name": "pontos",
+                      "expression": "`pontos`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "heatmap",
+              "encodings": {
+                "color": {
+                  "fieldName": "pontos",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 12,
+            "height": 12
+          }
+        },
+        {
+          "widget": {
+            "name": "7aec7057",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "54c934d7",
+                  "fields": [
+                    {
+                      "name": "time",
+                      "expression": "`time`"
+                    },
+                    {
+                      "name": "ataque",
+                      "expression": "`ataque`"
+                    },
+                    {
+                      "name": "defesa",
+                      "expression": "`defesa`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "ataque",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "defesa",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "time",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 18,
+            "width": 8,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "6a1f8124",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "5869122b",
+                  "fields": [
+                    {
+                      "name": "time_ordem",
+                      "expression": "`time_ordem`"
+                    },
+                    {
+                      "name": "min(posicao)",
+                      "expression": "MIN(`posicao`)"
+                    },
+                    {
+                      "name": "q1(posicao)",
+                      "expression": "PERCENTILE(`posicao`, 0.25)"
+                    },
+                    {
+                      "name": "median(posicao)",
+                      "expression": "MEDIAN(`posicao`)"
+                    },
+                    {
+                      "name": "q3(posicao)",
+                      "expression": "PERCENTILE(`posicao`, 0.75)"
+                    },
+                    {
+                      "name": "max(posicao)",
+                      "expression": "MAX(`posicao`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`pct` > 0"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showDescription": false,
+                "showTitle": true,
+                "title": "Faixa de Posições (Simulação)"
+              },
+              "version": 3,
+              "widgetType": "box",
+              "encodings": {
+                "x": {
+                  "fieldName": "time_ordem",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "whiskerStart": {
+                    "fieldName": "min(posicao)"
+                  },
+                  "boxStart": {
+                    "fieldName": "q1(posicao)"
+                  },
+                  "boxMid": {
+                    "fieldName": "median(posicao)"
+                  },
+                  "boxEnd": {
+                    "fieldName": "q3(posicao)"
+                  },
+                  "whiskerEnd": {
+                    "fieldName": "max(posicao)"
+                  },
+                  "scale": {
+                    "reverse": true,
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 26,
+            "width": 12,
+            "height": 8
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "dc04a56f",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "bb5633e3",
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "showDescription": false
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": []
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

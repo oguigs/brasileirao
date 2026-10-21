@@ -4,30 +4,44 @@ resources:
       name: brasileirao_04_busca_agendada
       description: Busca resultados novos na internet nos dias de jogo e grava na
         pasta de entrada.
-      timeout_seconds: 900
+
+      # 4 tentativas x 300s + 3 intervalos x 120s = 1560s.
+      # O timeout do job precisa caber isso, senão os retries são cortados.
+      timeout_seconds: 1800
+
       health:
         rules:
           - metric: RUN_DURATION_SECONDS
             op: GREATER_THAN
             value: 300
+
       schedule:
         quartz_cron_expression: 0 40 23 ? * SUN,MON,WED,THU
         timezone_id: America/Sao_Paulo
         pause_status: UNPAUSED
+
+      git_source:
+        git_url: https://github.com/oguigs/brasileirao
+        git_provider: gitHub
+        git_branch: main
+
       tasks:
         - task_key: buscar_resultados
           notebook_task:
-            notebook_path: /Workspace/Users/guilherme.carmo.gomes@gmail.com/brasileirao/src/notebooks/80_buscar_resultados.py
-            source: WORKSPACE
+            notebook_path: src/notebooks/80_buscar_resultados
+            source: GIT
           max_retries: 3
           min_retry_interval_millis: 120000
           retry_on_timeout: true
           timeout_seconds: 300
+
       tags:
         aula: lakeflow-jobs
         fluxo: incremental
+
       queue:
         enabled: true
+
       parameters:
         - name: catalogo
           default: workspace

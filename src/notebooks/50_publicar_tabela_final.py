@@ -1,4 +1,8 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "6"
+# ///
 # MAGIC %md
 # MAGIC # 50 · Publicar a tabela final
 # MAGIC Junta classificação atual + projeção (probabilidades) + limites matemáticos numa só tabela,
