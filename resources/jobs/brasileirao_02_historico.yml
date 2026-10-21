@@ -8,7 +8,7 @@ resources:
       tasks:
         - task_key: listar_temporadas
           notebook_task:
-            notebook_path: ../../src/notebooks/10_listar_temporadas.py  # TODO: confirme o nome do notebook
+            notebook_path: ../../src/notebooks/10_listar_temporadas.py
 
         - task_key: carregar_temporadas
           depends_on:
@@ -19,7 +19,7 @@ resources:
             task:
               task_key: carregar_temporada
               notebook_task:
-                notebook_path: ../../src/notebooks/11_carregar_temporada.py  # TODO: confirme o nome do notebook
+                notebook_path: ../../src/notebooks/11_bronze_temporada.py
                 base_parameters:
                   temporada: "{{input}}"
               max_retries: 2
