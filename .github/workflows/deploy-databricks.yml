@@ -1,0 +1,31 @@
+name: Deploy Databricks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-databricks
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: databricks/setup-cli@main
+
+      # Em PR: só valida. Em push na main: valida e faz deploy.
+      - name: Validar bundle
+        run: databricks bundle validate -t prod
+
+      - name: Deploy
+        if: github.event_name != 'pull_request'
+        run: databricks bundle deploy -t prod

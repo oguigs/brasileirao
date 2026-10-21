@@ -16,7 +16,6 @@ resources:
             - task_key: modo_completo
               outcome: "true"
           run_job_task:
-            # Referência ao job do próprio bundle, em vez de ID fixo
             job_id: ${resources.jobs.brasileirao_02_historico.id}
 
         - task_key: rodar_incremental

@@ -6,7 +6,6 @@ resources:
         pasta de entrada.
 
       # 4 tentativas x 300s + 3 intervalos x 120s = 1560s.
-      # O timeout do job precisa caber isso, senão os retries são cortados.
       timeout_seconds: 1800
 
       health:
@@ -20,16 +19,10 @@ resources:
         timezone_id: America/Sao_Paulo
         pause_status: UNPAUSED
 
-      git_source:
-        git_url: https://github.com/oguigs/brasileirao
-        git_provider: gitHub
-        git_branch: main
-
       tasks:
         - task_key: buscar_resultados
           notebook_task:
-            notebook_path: src/notebooks/80_buscar_resultados
-            source: GIT
+            notebook_path: ../../src/notebooks/80_buscar_resultados.py
           max_retries: 3
           min_retry_interval_millis: 120000
           retry_on_timeout: true

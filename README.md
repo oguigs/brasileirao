@@ -1,34 +1,49 @@
-# Brasileirão 2026 com Lakeflow Jobs
+## Deploy no Databricks (CI/CD)
 
-Pipeline que calcula as chances de título, Top 5 e rebaixamento do Brasileirão 2026,
-construída ao vivo na aula de orquestração. Roda no Databricks Free Edition
-(serverless, Unity Catalog, catálogo `workspace`).
+Os jobs são definidos como código em `resources/jobs/` e publicados no Databricks com **Databricks Asset Bundles**. A cada push na `main`, o GitHub Actions (`.github/workflows/deploy-databricks.yml`) faz o deploy dos jobs e dos notebooks de `src/notebooks/`. Em pull requests, o workflow só valida o bundle.
 
-## Jobs
+### Configuração (uma vez por repositório)
 
-| Job | Como dispara | O que faz |
-|---|---|---|
-| `brasileirao_01_setup` | manual, uma vez | cria schemas e volume e copia os dados |
-| `brasileirao_02_historico` | manual | carrega 2012 a 2026, treina o modelo, simula e publica |
-| `brasileirao_03_incremental` | chegada de arquivo em `landing/resultados/` | ingere, valida, faz MERGE e recalcula |
-| `brasileirao_04_busca_agendada` | dom, seg, qua e qui às 23:40 | busca resultados novos e grava um CSV na landing |
-| `brasileirao_05_orquestrador` | manual, parâmetro `modo` | chama o histórico ou o incremental |
+**1. Gerar um token no Databricks**
 
-Tabela final: `workspace.brasileirao_gold.tabela_final`.
+No Databricks, clique no avatar (canto superior direito) → **Settings → Developer → Access tokens → Manage → Generate new token**. Dê um nome (ex.: `github-actions`) e copie o valor, que só aparece uma vez.
 
-## Como rodar
- 
-1. No Databricks: **Workspace > Create > Git folder** com a URL deste repositório.
-2. Crie os jobs na tela, como na aula, ou a partir dos arquivos de `resources/jobs`.
-3. Rode `brasileirao_01_setup` e depois `brasileirao_02_historico`.
-4. Para simular uma rodada, rode o notebook `SOLTAR_ARQUIVO`.
+**2. Cadastrar os secrets no GitHub**
 
-## Estrutura
+No repositório: **Settings → Secrets and variables → Actions → New repository secret**. Crie dois:
 
-- `dados/`: histórico 2012-2026, calendário, nomes dos times e arquivos de exemplo
-- `src/lib/brasileirao/`: regras do projeto (configuração, modelo, tabela e simulação)
-- `src/notebooks/`: uma tarefa de job por notebook (00 a 80)
-- `resources/jobs/`: definição dos jobs em YAML
-- `SOLTAR_ARQUIVO.py`: simula a chegada de um arquivo de resultados
+| Name | Valor |
+|---|---|
+| `DATABRICKS_HOST` | URL do workspace, até o `.com`, sem barra no final. Ex.: `https://dbc-xxxxxxxx-xxxx.cloud.databricks.com` |
+| `DATABRICKS_TOKEN` | Token gerado no passo 1 |
 
-Dados históricos e odds: football-data.co.uk.
+Use **Repository secrets** (não *Environment secrets*).
+
+**3. Fazer o primeiro deploy**
+
+Faça push na `main` (ou rode o workflow manualmente em **Actions → Deploy Databricks → Run workflow**). Quando o workflow terminar verde, os jobs aparecem em **Jobs & Pipelines** no Databricks.
+
+**4. Remover jobs antigos criados pela UI**
+
+O bundle cria jobs novos e não adota os existentes. Apague qualquer job `brasileirao_*` criado manualmente, senão o gatilho de arquivo e o agendamento disparam em dobro.
+
+### Regras de uso
+
+- **Não edite os jobs pela UI do Databricks.** O próximo deploy sobrescreve as alterações. Mude o YAML em `resources/jobs/` e faça push.
+- Todo arquivo em `src/notebooks/` usado como notebook precisa começar com a linha `# Databricks notebook source`.
+- Os caminhos dos notebooks nos YAMLs são relativos ao próprio YAML (ex.: `../../src/notebooks/20_silver_partidas.py`).
+
+### Deploy local (opcional)
+
+Com a [Databricks CLI](https://docs.databricks.com/dev-tools/cli/install.html) instalada e autenticada (`databricks auth login`):
+
+```bash
+databricks bundle validate
+databricks bundle deploy -t prod
+```
+
+### Segurança
+
+- Os secrets ficam criptografados nas configurações do GitHub e **não** vão junto com clone ou fork. Workflows de PR vindos de fork não recebem secrets.
+- Nunca commite tokens. `.databrickscfg`, `.env` e `.databricks/` estão no `.gitignore`.
+- Se um token vazar, revogue em **Settings → Developer → Access tokens** e atualize o secret `DATABRICKS_TOKEN`.
